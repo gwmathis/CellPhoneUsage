@@ -30,6 +30,5 @@ create table cellphoneusage
 ## Notes
 
 * The CellPhone.csv and CellPhoneUsageByMonth.csv are found at https://github.com/WCF-Insurance/java-developer-cell-phone-usage. 
-* The fields in the CellPhoneUsageByMonth.csv did not match the bullet points in the README.md file. When creating the cellphoneusage table I decided to fields in the .csv file so the records would easily import.
-* I used a HashMap to store Usage objects and used the usage date field as the key. When records had the same usage date I simply added the aded the totalMinutes and totalData to the same Usage object.
-* Just realized as I am typing these notes that the report was suppose to have a minutes and data usage columns for each month. I handled the multiple records on a single date by simply adding the additional minutes and data to my same Usage object.  However, I did not handle multiple usage dates per month.  I should fix that!
+* The fields in the CellPhoneUsageByMonth.csv did not match the bullet points in the README.md file. When creating the cellphoneusage table I decided to use the fields in the .csv file so the records would import.
+* I used a HashMap to store Usage objects and used the yyyy-MM as the key. When records are in the same year-month I simply added the totalMinutes and totalData to the same Usage object.
