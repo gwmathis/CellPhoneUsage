@@ -10,6 +10,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -98,7 +99,7 @@ class Employee {
 	String employeeName;
 	String cellPhoneModel;
 	Date purchaseDate;
-	HashMap<Date, Usage> usageList = new HashMap<Date, Usage>();
+	HashMap<String, Usage> usageList = new HashMap<String, Usage>();
 }
 
 public class App {
@@ -108,7 +109,7 @@ public class App {
 		try {
 			Class.forName("org.postgresql.Driver");
 
-			return DriverManager.getConnection("jdbc:postgresql://localhost:5432/cellphoneusage", "postgres", "password");
+			return DriverManager.getConnection("jdbc:postgresql://localhost:5432/cellphoneusage", "postgres", "turbo");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
@@ -182,12 +183,14 @@ public class App {
 					employees.put(employeeId, employee);
 				}
 				
-				// Using a HashMap to ensure the usage date is unique. If records have the same usage date then just add the total minutes and data to the Usage object.
+				// Using a HashMap to ensure the usage date is in the right year-month. If records have the same usage date then just add the total minutes and data to the Usage object.	
 				Date usageDate = rs.getDate("date");
-				Usage usage = employee.usageList.get(usageDate);
+				SimpleDateFormat formatter =  new SimpleDateFormat("yyyy-MM"); 
+				String yearmonth = formatter.format(usageDate);
+				Usage usage = employee.usageList.get(yearmonth);
 				if (usage == null) {
 					usage = new Usage(usageDate, rs.getInt("totalMinutes"), rs.getFloat("totalData"));
-					employee.usageList.put(usageDate, usage);
+					employee.usageList.put(yearmonth, usage);
 				} else {
 					usage.totalMinutes += rs.getInt("totalMinutes");
 					usage.totalData += rs.getFloat("totalData");
@@ -198,24 +201,24 @@ public class App {
 		}
 
 		sb.append("Employee Id, Employee Name, Model, Purchase Date, Minutes Usage, Data Usage, Usage Date\n");
-
+				
 		for (Employee employee : employees.values()) {
 			sb.append(employee.employeeId + ", " + employee.employeeName + ", " + employee.cellPhoneModel + ", "
 					+ employee.purchaseDate);
 
-			// Sort usage data by date
-			List<Usage> list = new ArrayList<Usage>(employee.usageList.values());
-
-			Collections.sort(list, new Comparator<Usage>() {
-				public int compare(Usage o1, Usage o2) {
-					return o1.usageDate.compareTo(o2.usageDate);
-				}
+			List<String> list = new ArrayList<String>(employee.usageList.keySet());
+			
+			Collections.sort(list, new Comparator<String>() {
+				public int compare(String o1, String o2) {
+					return o1.compareTo(o2);
+				}				
 			});
 
-			for (Usage usage : list) {
-				sb.append(", " + usage.totalMinutes + ", " + usage.totalData + ", " + usage.usageDate);
+			for (String key : list) {
+				Usage usage = employee.usageList.get(key);
+				sb.append(", " + usage.totalMinutes + ", " + String.format("%.3f", usage.totalData) + ", " + key);
 			}
-
+			
 			sb.append("\n");
 		}
 	}
