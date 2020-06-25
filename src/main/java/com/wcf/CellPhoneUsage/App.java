@@ -1,6 +1,5 @@
 package com.wcf.CellPhoneUsage;
 
-import java.awt.print.PrinterJob;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -104,12 +103,12 @@ class Employee {
 
 public class App {
 
-	private Connection getDatabaseConnecton() {
+	private Connection getDatabaseConnection() {
 
 		try {
 			Class.forName("org.postgresql.Driver");
 
-			return DriverManager.getConnection("jdbc:postgresql://localhost:5432/cellphoneusage", "postgres", "turbo");
+			return DriverManager.getConnection("jdbc:postgresql://localhost:5432/cellphoneusage", "postgres", "password");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
@@ -182,7 +181,8 @@ public class App {
 							rs.getString("model"), rs.getDate("purchaseDate"));
 					employees.put(employeeId, employee);
 				}
-
+				
+				// Using a HashMap to ensure the usage date is unique. If records have the same usage date then just add the total minutes and data to the Usage object.
 				Date usageDate = rs.getDate("date");
 				Usage usage = employee.usageList.get(usageDate);
 				if (usage == null) {
@@ -203,7 +203,7 @@ public class App {
 			sb.append(employee.employeeId + ", " + employee.employeeName + ", " + employee.cellPhoneModel + ", "
 					+ employee.purchaseDate);
 
-			// Sort by usage date
+			// Sort usage data by date
 			List<Usage> list = new ArrayList<Usage>(employee.usageList.values());
 
 			Collections.sort(list, new Comparator<Usage>() {
@@ -258,52 +258,14 @@ public class App {
 		}
 	}
 
-	public PrintService findPrintService(String printerName) {
-
-		printerName = printerName.toLowerCase();
-
-		PrintService service = null;
-
-		// Get array of all print services
-		PrintService[] services = PrinterJob.lookupPrintServices();
-
-		// Retrieve a print service from the array
-		for (int index = 0; service == null && index < services.length; index++) {
-
-			if (services[index].getName().toLowerCase().indexOf(printerName) >= 0) {
-				service = services[index];
-			}
-		}
-
-		// Return the print service
-		return service;
-	}
-
-	/**
-	 * Retrieves a List of Printer Service Names.
-	 * 
-	 * @return List
-	 */
-	public List<String> getPrinterServiceNameList() {
-
-		// get list of all print services
-		PrintService[] services = PrinterJob.lookupPrintServices();
-		List<String> list = new ArrayList<String>();
-
-		for (int i = 0; i < services.length; i++) {
-			list.add(services[i].getName());
-		}
-
-		return list;
-	}
-
 	public static void main(String[] args) {
 
 		App app = new App();
 
-		Connection connection = app.getDatabaseConnecton();
+		Connection connection = app.getDatabaseConnection();
 
 		if (connection == null) {
+			System.out.println("Error: Could not connect to the database");
 			return;
 		}
 
