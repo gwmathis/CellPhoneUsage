@@ -2,6 +2,7 @@
 
 ## Create and connect to the database 
 create database cellphoneusage;
+
 \c cellphoneusage;
 
 ## Create tables and import records 
