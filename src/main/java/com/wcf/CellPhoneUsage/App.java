@@ -109,7 +109,7 @@ public class App {
 		try {
 			Class.forName("org.postgresql.Driver");
 
-			return DriverManager.getConnection("jdbc:postgresql://localhost:5432/cellphoneusage", "postgres", "turbo");
+			return DriverManager.getConnection("jdbc:postgresql://localhost:5432/cellphoneusage", "postgres", "password");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
