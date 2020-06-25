@@ -25,3 +25,6 @@ create table cellphoneusage
 );
 
 \copy cellphoneusage FROM \cellphoneusage\java-developer-cell-phone-usage\CellPhoneUsageByMonth.csv WITH CSV HEADER;
+
+
+## Notes
