@@ -232,7 +232,7 @@ public class App {
 
 		System.out.println(sb.toString());
 		
-		sb.append("/f");
+		sb.append("\f");
 		
 		String defaultPrinter = PrintServiceLookup.lookupDefaultPrintService().getName();
 		System.out.println("Default printer: " + defaultPrinter);
